@@ -4,6 +4,7 @@ import Grid from './components/Grid'
 import Controls from './components/Controls';
 import { puzzles } from './data/puzzles';
 import { isValidSudoku } from './utils/validate';
+import { solveSudoku } from './utils/solve';
 
 function App() {
     const [puzzle, setPuzzle] = useState(puzzles.easy);
@@ -77,9 +78,15 @@ function App() {
     const handleSolve = () => {
       const newBoard = board.map(row => [...row]);
 
-      // TODO: thay bằng DFS solver sau
-      // tạm thời demo:
-      console.log("Solve clicked");
+      const result = solveSudoku(newBoard);
+      
+      if (result.isSolved) {
+        setBoard(result.board);
+        console.log(`Solved! Time: ${result.stats.time_elapsed.toFixed(2)}ms, Nodes: ${result.stats.nodes_visited}, Backtracks: ${result.stats.backtrack_counts}`);
+        setStatus('Solved successfully!');
+      } else {
+        setStatus('No solution exists!');
+      }
     };
 
     const handleInput = (rIdx, cIdx, value) => {

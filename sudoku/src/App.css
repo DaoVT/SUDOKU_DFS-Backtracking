@@ -82,3 +82,10 @@ input:focus {
   background-color: #a6f1a6 !important;
   transition: background-color 0.3s ease;
 }
+.stats {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f3f3f3;
+  border-radius: 8px;
+  display: inline-block;
+}

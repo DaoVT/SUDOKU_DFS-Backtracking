@@ -3,6 +3,7 @@ const Controls = ({
     handleReset,
     handleHint,
     handleSolve,
+    handleNewGame,
     handleChangeDifficulty
 }) => {
     return (
@@ -11,6 +12,7 @@ const Controls = ({
             <button onClick={handleReset} style={{marginRight: 8}}>Reset</button>
             <button onClick={handleHint} style={{marginRight: 8}}>Hint</button>
             <button onClick={handleSolve} style={{marginRight: 8}}>Solve</button>
+            <button onClick={handleNewGame} style={{marginRight: 8}}>New Game</button>
             <select onChange={(e) => handleChangeDifficulty(e.target.value)}>
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>

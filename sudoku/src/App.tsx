@@ -7,9 +7,9 @@ import { isValidSudoku } from './utils/validate';
 import { solveSudoku } from './utils/solve';
 
 function App() {
-    const [puzzle, setPuzzle] = useState(puzzles.easy);
+    const [puzzle, setPuzzle] = useState(puzzles.easy[0]);
+    const [board, setBoard] = useState(puzzles.easy[0].map(row => [...row]));
     const [difficulty, setDifficulty] = useState('easy');
-    const [board, setBoard] = useState(puzzles.easy.map(row => [...row]));
     const [solution, setSolution] = useState(
       Array(9)
         .fill(null)
@@ -47,15 +47,6 @@ function App() {
       setStatus('');
       setSelected(null);
       setGreenCount(0);
-    };
-
-    const loadPuzzle = (level) => {
-      const newPuzzle = puzzles[level];
-      setPuzzle(newPuzzle);
-      setBoard(newPuzzle.map(row => [...row]));
-      setSolution(Array(9).fill(null).map(() => Array(9).fill(null)));
-      setGreenCount(0);
-      setStatus('');
     };
 
     const handleHint = () => {
@@ -104,6 +95,25 @@ function App() {
       }
     
     };
+    const getRandomPuzzle = (level: string) => {
+      const list = puzzles[level.toLowerCase()];
+      const randomIndex = Math.floor(Math.random() * list.length);
+      const newPuzzle = list[randomIndex];
+
+      setPuzzle(newPuzzle);
+      setBoard(newPuzzle.map(row => [...row]));
+      setStatus('');
+      setSelected(null);
+      setGreenCount(0);
+    };
+
+    const loadPuzzle = (level: string) => {
+      getRandomPuzzle(level);
+    };
+
+    const handleNewGame = () => {
+      getRandomPuzzle(difficulty);
+    };
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -125,6 +135,7 @@ function App() {
           setDifficulty(level);
           loadPuzzle(level);
         }}
+        handleNewGame={handleNewGame}
       />
       {status && <div className='status'>{status}</div> }
     </div>

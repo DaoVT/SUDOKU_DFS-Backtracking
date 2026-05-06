@@ -21,7 +21,7 @@ function App() {
 
     const [greenCount, setGreenCount] = useState(0);
 
-    // 👉 THÊM: lưu stats
+    // lưu stats
     const [stats, setStats] = useState(null);
     
     const handleCheck = () => {
@@ -33,7 +33,7 @@ function App() {
       setStatus('');
       setSelected(null);
       setGreenCount(0);
-      setStats(null); // 👈 reset luôn stats
+      setStats(null); 
     };
 
     const handleHint = () => {
@@ -54,7 +54,7 @@ function App() {
       }
     };
 
-    // 🔥 QUAN TRỌNG NHẤT: DFS + stats
+    // DFS + stats
     const handleSolve = () => {
       const result = solveWithStats(board);
 
@@ -125,7 +125,7 @@ function App() {
 
       {status && <div className='status'>{status}</div> }
 
-      {/* 🔥 HIỂN THỊ THỐNG KÊ */}
+      {/* HIỂN THỊ THỐNG KÊ */}
       {stats && (
         <div className="stats">
           <p>Time: {stats.time_elapsed.toFixed(2)} ms</p>

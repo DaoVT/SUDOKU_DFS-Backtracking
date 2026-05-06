@@ -3,8 +3,7 @@ import './App.css'
 import Grid from './components/Grid'
 import Controls from './components/Controls';
 import { puzzles } from './data/puzzles';
-import { isValidSudoku } from './utils/validate';
-import { solveSudoku } from './utils/solve';
+import { solveWithStats } from './utils/dfsAdvanced';
 
 function App() {
     const [puzzle, setPuzzle] = useState(puzzles.easy[0]);
@@ -21,25 +20,12 @@ function App() {
     const [selected, setSelected] = useState(null);
 
     const [greenCount, setGreenCount] = useState(0);
+
+    // 👉 THÊM: lưu stats
+    const [stats, setStats] = useState(null);
     
     const handleCheck = () => {
-      const flatBoard = board.flat();
-      const flatSolution = solution.flat();
-
-      if (flatBoard.every((cell,i) => cell === flatSolution[i])) {
-        setStatus('Correct!');
-
-        let count = 0;
-        const totalCells = 81;
-        const interval = setInterval(() => {
-          count++;
-          setGreenCount(count);
-          if (count === totalCells) clearInterval(interval);
-        },30)
-      } else {
-        setStatus('Incorrect, try again.')
-        setGreenCount(0);
-      }
+      setStatus('Use Solve to check with DFS result');
     }
 
     const handleReset = () => {
@@ -47,37 +33,35 @@ function App() {
       setStatus('');
       setSelected(null);
       setGreenCount(0);
+      setStats(null); // 👈 reset luôn stats
     };
 
     const handleHint = () => {
+      // đơn giản: dùng DFS để lấy 1 ô đúng
+      const result = solveWithStats(board);
+      const solution = result.solution;
+
+      const newBoard = board.map(row => [...row]);
+
       for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
-          if (board[r][c] === null) {
-            const newBoard = board.map(row => [...row]);
-
-        // tạm thời random số hợp lệ (nếu chưa có solver)
-            for (let num = 1; num <= 9; num++) {
-              newBoard[r][c] = num;
-              setBoard(newBoard);
-              return;
-            }
+          if (newBoard[r][c] === null) {
+            newBoard[r][c] = solution[r][c];
+            setBoard(newBoard);
+            return;
           }
         }
       }
     };
 
+    // 🔥 QUAN TRỌNG NHẤT: DFS + stats
     const handleSolve = () => {
-      const newBoard = board.map(row => [...row]);
+      const result = solveWithStats(board);
 
-      const result = solveSudoku(newBoard);
-      
-      if (result.isSolved) {
-        setBoard(result.board);
-        console.log(`Solved! Time: ${result.stats.time_elapsed.toFixed(2)}ms, Nodes: ${result.stats.nodes_visited}, Backtracks: ${result.stats.backtrack_counts}`);
-        setStatus('Solved successfully!');
-      } else {
-        setStatus('No solution exists!');
-      }
+      setBoard(result.solution);
+      setStats(result.stats);
+
+      setStatus('Solved with DFS + Backtracking!');
     };
 
     const handleInput = (rIdx, cIdx, value) => {
@@ -93,7 +77,6 @@ function App() {
           )
         );
       }
-    
     };
     const getRandomPuzzle = (level: string) => {
       const list = puzzles[level.toLowerCase()];
@@ -118,14 +101,16 @@ function App() {
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>Sudoku</h1>
+
       <Grid
-      board={board}
-      handleInput={handleInput}
-      puzzle={puzzle}
-      selected={selected}
-      setSelected={setSelected}
-      greenCount={greenCount}
+        board={board}
+        handleInput={handleInput}
+        puzzle={puzzle}
+        selected={selected}
+        setSelected={setSelected}
+        greenCount={greenCount}
       />
+
       <Controls 
         handleCheck={handleCheck}
         handleReset={handleReset}
@@ -137,8 +122,19 @@ function App() {
         }}
         handleNewGame={handleNewGame}
       />
+
       {status && <div className='status'>{status}</div> }
+
+      {/* 🔥 HIỂN THỊ THỐNG KÊ */}
+      {stats && (
+        <div className="stats">
+          <p>Time: {stats.time_elapsed.toFixed(2)} ms</p>
+          <p>Nodes visited: {stats.nodes_visited}</p>
+          <p>Backtracks: {stats.backtrack_counts}</p>
+        </div>
+      )}
     </div>
   )
 }
+
 export default App;
